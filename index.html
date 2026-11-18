@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlayBox – Free Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1024; --bg2:#17183a; --card:#1f2150; --line:#2e3170;
+  --text:#f3f3ff; --muted:#a3a6d6; --accent:#ffcc33; --accent2:#ff5c8a; --ok:#3ee0a1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#2b1f6b 0,transparent 60%),var(--bg);color:var(--text);min-height:100vh}
+a{color:inherit}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;max-width:1200px;margin:0 auto}
+.logo{font-family:Fredoka,sans-serif;font-weight:700;font-size:28px;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.logo span{color:var(--accent)}
+.logo i{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));font-style:normal;font-size:20px}
+.search{flex:0 1 320px;position:relative}
+.search input{width:100%;padding:11px 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:inherit;outline:none}
+.search input:focus{border-color:var(--accent)}
+main{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center;padding:28px;border-radius:24px;background:linear-gradient(135deg,#3a2bb0,#a3367f);margin:8px 0 34px;overflow:hidden;position:relative}
+.hero h1{font-family:Fredoka,sans-serif;font-size:clamp(28px,4vw,46px);line-height:1.05;margin-bottom:10px}
+.hero p{color:#e9e4ff;max-width:440px;margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;border:0;background:var(--accent);color:#2a1d00;font:600 15px Inter;cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:rgba(255,255,255,.14);color:#fff}
+.hero-art{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;transform:rotate(-6deg)}
+.hero-art div{aspect-ratio:1;border-radius:18px;display:grid;place-items:center;font-size:40px;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+section{margin-bottom:38px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.sec-head h2{font-family:Fredoka,sans-serif;font-size:24px}
+.sec-head small{color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--muted);font:500 13px Inter;cursor:pointer}
+.chip.on{background:var(--accent);color:#2a1d00;border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+.card{background:var(--card);border-radius:18px;overflow:hidden;cursor:pointer;border:1px solid var(--line);transition:transform .15s,border-color .15s;text-align:left;color:var(--text);font:inherit;padding:0}
+.card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.thumb{aspect-ratio:4/3;display:grid;place-items:center;font-size:52px;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:8px;left:8px;font:600 10px Inter;letter-spacing:.6px;text-transform:uppercase;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,.45)}
+.card .meta{padding:10px 12px 12px}
+.card b{display:block;font-family:Fredoka,sans-serif;font-weight:600;font-size:17px}
+.card .meta span{color:var(--muted);font-size:12.5px}
+.note{background:var(--bg2);border:1px dashed var(--line);color:var(--muted);border-radius:14px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
+.note code{color:var(--accent)}
+.empty{color:var(--muted);padding:20px 0}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:24px}
+/* player */
+.player{position:fixed;inset:0;background:rgba(6,6,20,.86);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.player.open{display:flex}
+.pbox{background:var(--bg2);border:1px solid var(--line);border-radius:22px;width:min(560px,100%);max-height:100%;overflow:auto;padding:16px}
+.pbox.wide{width:min(980px,100%)}
+.ptop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ptop h3{font-family:Fredoka,sans-serif;font-size:22px}
+.stats{display:flex;gap:8px}
+.stat{background:var(--card);border-radius:10px;padding:5px 10px;font-size:12px;color:var(--muted);text-align:center;min-width:64px}
+.stat b{display:block;color:var(--text);font-size:16px}
+.x{width:38px;height:38px;border-radius:12px;border:0;background:var(--card);color:var(--text);font-size:20px;cursor:pointer}
+.stage{display:flex;flex-direction:column;align-items:center;gap:12px}
+canvas{background:#0b0c1d;border-radius:14px;max-width:100%;touch-action:none;display:block}
+.msg{color:var(--muted);font-size:13.5px;text-align:center;min-height:20px}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.small{padding:9px 16px;font-size:14px}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);gap:6px}
+.dpad button{height:52px;border-radius:12px;border:0;background:var(--card);color:var(--text);font-size:20px;cursor:pointer}
+.dpad button:active{background:var(--line)}
+/* 2048 */
+.g2048{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#26285c;padding:8px;border-radius:14px;width:min(380px,86vw);aspect-ratio:1;touch-action:none}
+.tile{border-radius:9px;display:grid;place-items:center;font:700 clamp(18px,5vw,30px) Fredoka;background:#33366f;color:#fff;transition:background .1s}
+/* memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(400px,86vw)}
+.mcard{aspect-ratio:1;border-radius:14px;border:0;font-size:34px;cursor:pointer;background:linear-gradient(135deg,#4b3fd1,#a3367f);color:transparent;transition:transform .25s}
+.mcard.up,.mcard.done{background:#fff;color:initial;transform:rotateY(180deg)}
+.mcard.done{opacity:.55}
+.mcard span{display:inline-block;transform:rotateY(180deg)}
+/* ttt */
+.ttt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(320px,80vw)}
+.ttt button{aspect-ratio:1;border-radius:14px;border:0;background:var(--card);color:var(--text);font:700 48px Fredoka;cursor:pointer}
+.ttt button.x1{color:var(--accent)} .ttt button.o1{color:var(--accent2)}
+.ttt button.win{background:#2f6a59}
+iframe.feed{width:100%;aspect-ratio:16/9;max-height:72vh;border:0;border-radius:14px;background:#000}
+iframe.feed.tall{aspect-ratio:9/16;width:auto;height:72vh;max-width:100%}
+.ginfo{width:100%;color:var(--muted);font-size:14px;line-height:1.5}
+.ginfo p{margin-bottom:8px}.ginfo b{color:var(--text)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{background:var(--card);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--text)}
+@media (max-width:760px){.hero{grid-template-columns:1fr}.hero-art{display:none}header{flex-wrap:wrap}.search{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><i>🎮</i>Play<span>Box</span></div>
+  <div class="search"><input id="q" type="search" placeholder="Search games…" aria-label="Search games"></div>
+</header>
+
+<main>
+  <div class="hero">
+    <div>
+      <h1>Free games.<br>No downloads.</h1>
+      <p>Play instantly in your browser – on phone or computer. Our own originals plus nearly 3,000 more free games.</p>
+      <div class="row" style="justify-content:flex-start">
+        <button class="btn" onclick="openGame('snake')">▶ Play Snake</button>
+        <button class="btn ghost" onclick="document.getElementById('more').scrollIntoView({behavior:'smooth'})">Browse all</button>
+      </div>
+    </div>
+    <div class="hero-art"><div>🐍</div><div>🧩</div><div>🐤</div><div>❌</div><div>🃏</div><div>⭕</div></div>
+  </div>
+
+  <section>
+    <div class="sec-head"><h2>⭐ PlayBox Originals</h2><small>Made by us · no ads</small></div>
+    <div class="grid" id="own"></div>
+  </section>
+
+  <section id="more">
+    <div class="sec-head"><h2>🌐 More Free Games</h2><small id="feedSrc">Partner feed</small></div>
+    <div class="note" id="feedNote" hidden></div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="feed"></div>
+    <div class="row" style="margin-top:18px"><button class="btn ghost small" id="loadMore" hidden>Load more</button></div>
+  </section>
+</main>
+<footer>© PlayBox · Free online games</footer>
+
+<div class="player" id="player" role="dialog" aria-modal="true">
+  <div class="pbox" id="pbox">
+    <div class="ptop">
+      <h3 id="ptitle">Game</h3>
+      <div class="stats" id="pstats"></div>
+      <button class="x" onclick="closeGame()" aria-label="Close">✕</button>
+    </div>
+    <div class="stage" id="stage"></div>
+  </div>
+</div>
+
+<script>
+/* ============ SETTINGS ============
+   Partner games come from games.json (your Playgama Partners export).
+   Each game link already carries your Playgama partner ID (clid).     */
+const GAMES_FILE = 'games.json';
+const PAGE_SIZE = 48;
+const CATS = ['All','puzzle','arcade','action','racing','shooting','strategy','simulation','adventure','merge','idle','obby','multiplayer','girls','sports'];
+
+/* ---------- storage helpers ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('pb_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k, v){ try{ localStorage.setItem('pb_'+k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- own games list ---------- */
+const OWN = [
+  {id:'snake', title:'Snake', icon:'🐍', cat:'Arcade', bg:'linear-gradient(135deg,#1f8a5b,#3ee0a1)'},
+  {id:'g2048', title:'2048', icon:'🧩', cat:'Puzzle', bg:'linear-gradient(135deg,#d9822b,#ffcc33)'},
+  {id:'flappy', title:'Flappy Chick', icon:'🐤', cat:'Arcade', bg:'linear-gradient(135deg,#2a8fd6,#7fd3ff)'},
+  {id:'memory', title:'Memory Match', icon:'🃏', cat:'Puzzle', bg:'linear-gradient(135deg,#7a3fd1,#ff5c8a)'},
+  {id:'ttt', title:'Tic-Tac-Toe', icon:'❌', cat:'Board', bg:'linear-gradient(135deg,#c2364f,#ff8a5c)'},
+];
+
+let feedItems = [], feedShown = PAGE_SIZE, feedCat = 'All', query = '';
+
+/* colour + letter used when a picture can't load */
+const PALETTE = [['#3a6fd8','#7fb2ff'],['#d84a3a','#ff9c5c'],['#3c7a3a','#8fd46b'],['#d83a8f','#ffa0d0'],['#d8783a','#ffc27f'],['#4a3ad8','#9c8fff'],['#2f8a8a','#7fe0e0'],['#8a3a8a','#e08ae0']];
+function fallbackBg(t){ let h = 0; for(const ch of t) h = (h*31 + ch.charCodeAt(0)) >>> 0; const [a,b] = PALETTE[h % PALETTE.length]; return `linear-gradient(135deg,${a},${b})`; }
+function imgFail(img){ const th = img.parentNode; th.style.background = fallbackBg(th.dataset.t); th.querySelector('.letter').hidden = false; img.remove(); }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function card(g, onClick, badge){
+  const b = document.createElement('button');
+  b.className = 'card';
+  const thumb = g.image
+    ? `<div class="thumb" data-t="${esc(g.title)}"><img loading="lazy" src="${esc(g.image)}" alt="" onerror="imgFail(this)"><span class="letter" hidden style="font:700 54px Fredoka,sans-serif">${esc(g.title.charAt(0).toUpperCase())}</span><span class="badge">${badge}</span></div>`
+    : `<div class="thumb" style="background:${g.bg}">${g.icon}<span class="badge">${badge}</span></div>`;
+  b.innerHTML = `${thumb}<div class="meta"><b></b><span></span></div>`;
+  b.querySelector('b').textContent = g.title;
+  b.querySelector('.meta span').textContent = g.cat || g.category || '';
+  b.onclick = onClick;
+  return b;
+}
+
+function renderOwn(){
+  const el = document.getElementById('own'); el.innerHTML = '';
+  const list = OWN.filter(g => g.title.toLowerCase().includes(query));
+  list.forEach(g => {
+    const best = store.get('best_'+g.id, null);
+    el.appendChild(card({...g, cat: g.cat + (best!==null ? ` · Best ${best}` : '')}, () => openGame(g.id), 'Original'));
+  });
+  if(!list.length) el.innerHTML = '<div class="empty">No originals match your search.</div>';
+}
+
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+function filtered(){
+  return feedItems.filter(g => (feedCat==='All' || g.g.includes(feedCat)) && (!query || g.t.toLowerCase().includes(query) || g.g.some(x => x.includes(query))));
+}
+function renderFeed(){
+  const chips = document.getElementById('chips'); chips.innerHTML = '';
+  CATS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (c===feedCat ? ' on' : ''); b.textContent = cap(c);
+    b.onclick = () => { feedCat = c; feedShown = PAGE_SIZE; renderFeed(); };
+    chips.appendChild(b);
+  });
+  const el = document.getElementById('feed'); el.innerHTML = '';
+  const list = filtered();
+  const frag = document.createDocumentFragment();
+  list.slice(0, feedShown).forEach(g => frag.appendChild(card(
+    {title:g.t, image:g.i, category: g.g.slice(0,2).map(cap).join(' · ') + (g.m ? ' · 📱' : '')},
+    () => openFeedGame(g), 'Free')));
+  el.appendChild(frag);
+  if(!list.length) el.innerHTML = '<div class="empty">No games match.</div>';
+  document.getElementById('feedSrc').textContent = `${list.length.toLocaleString()} games`;
+  const more = document.getElementById('loadMore');
+  more.hidden = list.length <= feedShown;
+  more.textContent = `Load more (${(list.length - feedShown).toLocaleString()} left)`;
+}
+
+async function loadFeed(){
+  try{
+    const r = await fetch(GAMES_FILE);
+    if(!r.ok) throw new Error(r.status);
+    feedItems = await r.json();
+  }catch(e){
+    const n = document.getElementById('feedNote'); n.hidden = false;
+    n.textContent = 'Could not load games.json. Put it in the same folder as this page.';
+  }
+  renderFeed();
+}
+document.getElementById('loadMore').onclick = () => { feedShown += PAGE_SIZE; renderFeed(); };
+let qTimer;
+document.getElementById('q').addEventListener('input', e => {
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => { query = e.target.value.trim().toLowerCase(); feedShown = PAGE_SIZE; renderOwn(); renderFeed(); }, 150);
+});
+
+/* ---------- player shell ---------- */
+let stopCurrent = null;
+const stage = () => document.getElementById('stage');
+function setStats(items){
+  document.getElementById('pstats').innerHTML = items.map(([k,v,id]) => `<div class="stat">${k}<b id="${id}">${v}</b></div>`).join('');
+}
+function showPlayer(title, wide){
+  document.getElementById('ptitle').textContent = title;
+  document.getElementById('pbox').classList.toggle('wide', !!wide);
+  document.getElementById('player').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGame(){
+  if(stopCurrent) { stopCurrent(); stopCurrent = null; }
+  document.getElementById('player').classList.remove('open');
+  stage().innerHTML = ''; document.getElementById('pstats').innerHTML = '';
+  document.body.style.overflow = '';
+  renderOwn();
+}
+document.getElementById('player').addEventListener('click', e => { if(e.target.id==='player') closeGame(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeGame(); });
+
+function openFeedGame(g){
+  showPlayer(g.t, true);
+  stage().innerHTML = `
+    <iframe class="feed${g.v ? ' tall' : ''}" src="${esc(g.u)}" allow="autoplay; fullscreen; gamepad; screen-wake-lock; clipboard-write" allowfullscreen></iframe>
+    <div class="row">
+      <button class="btn small" id="fs">⛶ Full screen</button>
+      <a class="btn ghost small" href="${esc(g.u)}" target="_blank" rel="noopener">Open in new tab ↗</a>
+    </div>
+    <div class="ginfo"><p>${esc(g.d)}</p>${g.h ? `<p><b>How to play:</b> ${esc(g.h)}</p>` : ''}
+    <div class="tags">${g.g.map(x => `<span>${esc(cap(x))}</span>`).join('')}${g.m ? '<span>📱 Works on mobile</span>' : ''}</div></div>`;
+  document.getElementById('fs').onclick = () => { const f = stage().querySelector('iframe'); try{ (f.requestFullscreen || f.webkitRequestFullscreen).call(f).catch(()=>{}); }catch(e){} };
+}
+
+function saveBest(id, score, higherIsBetter = true){
+  const best = store.get('best_'+id, null);
+  if(best===null || (higherIsBetter ? score > best : score < best)) { store.set('best_'+id, score); return score; }
+  return best;
+}
+
+function openGame(id){
+  const g = OWN.find(x => x.id===id);
+  showPlayer(g.icon + ' ' + g.title);
+  ({snake:Snake, g2048:G2048, flappy:Flappy, memory:Memory, ttt:TTT})[id]();
+}
+
+/* ---------- swipe helper ---------- */
+function onSwipe(el, cb){
+  let sx, sy;
+  el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if(Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    cb(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  });
+}
+const KEYDIR = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
+
+/* ================= SNAKE ================= */
+function Snake(){
+  const N = 20, S = 18;
+  stage().innerHTML = `<canvas id="cv" width="${N*S}" height="${N*S}"></canvas>
+    <div class="msg" id="msg">Arrow keys, swipe, or the buttons. Tap Start.</div>
+    <div class="row"><button class="btn small" id="go">Start</button></div>
+    <div class="dpad"><span></span><button data-d="up">▲</button><span></span><button data-d="left">◀</button><button data-d="down">▼</button><button data-d="right">▶</button></div>`;
+  setStats([['Score',0,'sc'],['Best',store.get('best_snake',0),'bs']]);
+  const cv = document.getElementById('cv'), c = cv.getContext('2d');
+  let snake, dir, next, food, score, timer, alive = false;
+  const V = {up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}, OPP = {up:'down',down:'up',left:'right',right:'left'};
+  function place(){ do{ food = [Math.random()*N|0, Math.random()*N|0]; } while(snake.some(p => p[0]===food[0] && p[1]===food[1])); }
+  function reset(){ snake = [[9,10],[8,10],[7,10]]; dir = next = 'right'; score = 0; place(); document.getElementById('sc').textContent = 0; }
+  function turn(d){ if(d && d !== OPP[dir]) next = d; }
+  function draw(){
+    c.fillStyle = '#0b0c1d'; c.fillRect(0,0,cv.width,cv.height);
+    for(let i=0;i<N;i++) for(let j=0;j<N;j++) if((i+j)%2){ c.fillStyle='#10122a'; c.fillRect(i*S,j*S,S,S); }
+    c.font = `${S-2}px serif`; c.textAlign='center'; c.textBaseline='middle'; c.fillText('🍎', food[0]*S+S/2, food[1]*S+S/2+1);
+    snake.forEach((p,i) => { c.fillStyle = i ? '#3ee0a1' : '#ffcc33'; c.beginPath(); c.roundRect(p[0]*S+1,p[1]*S+1,S-2,S-2,5); c.fill(); });
+  }
+  function step(){
+    dir = next; const h = [snake[0][0]+V[dir][0], snake[0][1]+V[dir][1]];
+    if(h[0]<0||h[1]<0||h[0]>=N||h[1]>=N||snake.some(p=>p[0]===h[0]&&p[1]===h[1])){
+      alive = false; clearInterval(timer);
+      document.getElementById('bs').textContent = saveBest('snake', score);
+      document.getElementById('msg').textContent = `Game over! Score ${score}. Tap Start to play again.`;
+      document.getElementById('go').textContent = 'Play again'; return;
+    }
+    snake.unshift(h);
+    if(h[0]===food[0] && h[1]===food[1]){ score++; document.getElementById('sc').textContent = score; place(); clearInterval(timer); timer = setInterval(step, Math.max(60, 130 - score*3)); }
+    else snake.pop();
+    draw();
+  }
+  function start(){ reset(); alive = true; clearInterval(timer); timer = setInterval(step, 130); document.getElementById('msg').textContent = 'Eat the apples. Don\'t hit the walls or yourself!'; draw(); }
+  document.getElementById('go').onclick = start;
+  stage().querySelectorAll('.dpad button').forEach(b => b.onclick = () => turn(b.dataset.d));
+  onSwipe(cv, turn);
+  const key = e => { if(KEYDIR[e.key]){ e.preventDefault(); turn(KEYDIR[e.key]); } else if(e.key===' ' && !alive){ e.preventDefault(); start(); } };
+  document.addEventListener('keydown', key);
+  reset(); draw();
+  stopCurrent = () => { clearInterval(timer); document.removeEventListener('keydown', key); };
+}
+
+/* ================= 2048 ================= */
+function G2048(){
+  stage().innerHTML = `<div class="g2048" id="bd"></div><div class="msg" id="msg">Swipe or use arrow keys. Join tiles to reach 2048!</div><div class="row"><button class="btn small" id="nw">New game</button></div>`;
+  setStats([['Score',0,'sc'],['Best',store.get('best_g2048',0),'bs']]);
+  const COL = {2:'#eee4da',4:'#ede0c8',8:'#f2b179',16:'#f59563',32:'#f67c5f',64:'#f65e3b',128:'#edcf72',256:'#edcc61',512:'#edc850',1024:'#edc53f',2048:'#edc22e'};
+  let b, score, over;
+  function add(){ const e = []; b.forEach((v,i) => !v && e.push(i)); if(e.length) b[e[Math.random()*e.length|0]] = Math.random()<.9?2:4; }
+  function draw(){
+    const bd = document.getElementById('bd');
+    bd.innerHTML = b.map(v => `<div class="tile" style="${v?`background:${COL[v]||'#3c3a32'};color:${v<=4?'#5a4f45':'#fff'}`:''}">${v||''}</div>`).join('');
+    document.getElementById('sc').textContent = score;
+  }
+  function slide(row){
+    const a = row.filter(Boolean);
+    for(let i=0;i<a.length-1;i++) if(a[i]===a[i+1]){ a[i]*=2; score+=a[i]; a.splice(i+1,1); }
+    while(a.length<4) a.push(0); return a;
+  }
+  function canMove(){ for(let i=0;i<16;i++){ if(!b[i]) return true; if(i%4<3 && b[i]===b[i+1]) return true; if(i<12 && b[i]===b[i+4]) return true; } return false; }
+  function move(d){
+    if(over) return;
+    const before = b.join();
+    for(let k=0;k<4;k++){
+      let idx = [0,1,2,3].map(j => d==='left'||d==='right' ? k*4+j : j*4+k);
+      if(d==='right'||d==='down') idx.reverse();
+      const out = slide(idx.map(i => b[i])); idx.forEach((i,j) => b[i] = out[j]);
+    }
+    if(b.join() !== before){ add(); draw(); document.getElementById('bs').textContent = saveBest('g2048', score); }
+    if(b.includes(2048) && !b.won){ b.won = true; document.getElementById('msg').textContent = '🎉 You made 2048! Keep going for a higher score.'; }
+    if(!canMove()){ over = true; document.getElementById('msg').textContent = `No moves left. Final score ${score}.`; }
+  }
+  function nw(){ b = Array(16).fill(0); score = 0; over = false; add(); add(); draw(); document.getElementById('msg').textContent = 'Swipe or use arrow keys. Join tiles to reach 2048!'; }
+  document.getElementById('nw').onclick = nw;
+  onSwipe(document.getElementById('bd'), move);
+  const key = e => { if(KEYDIR[e.key]){ e.preventDefault(); move(KEYDIR[e.key]); } };
+  document.addEventListener('keydown', key);
+  nw();
+  stopCurrent = () => document.removeEventListener('keydown', key);
+}
+
+/* ================= FLAPPY ================= */
+function Flappy(){
+  const W = 360, H = 480;
+  stage().innerHTML = `<canvas id="cv" width="${W}" height="${H}"></canvas><div class="msg">Tap, click, or press Space to flap.</div>`;
+  setStats([['Score',0,'sc'],['Best',store.get('best_flappy',0),'bs']]);
+  const cv = document.getElementById('cv'), c = cv.getContext('2d');
+  let y, vy, pipes, score, state = 'ready', raf, frame, last;
+  const GAP = 140, PW = 56, BX = 90;
+  function reset(){ y = H/2; vy = 0; pipes = []; score = 0; frame = 0; document.getElementById('sc').textContent = 0; }
+  function flap(){
+    if(state==='ready'){ state = 'play'; }
+    else if(state==='dead'){ reset(); state = 'ready'; return; }
+    vy = -6.6;
+  }
+  function loop(t){
+    const dt = Math.min(2, last ? (t-last)/16.67 : 1); last = t;
+    if(state==='play'){
+      frame += dt; vy += .38*dt; y += vy*dt;
+      if(frame >= 90){ frame = 0; pipes.push({x:W, top:60 + Math.random()*(H-GAP-140), passed:false}); }
+      pipes.forEach(p => p.x -= 2.6*dt); pipes = pipes.filter(p => p.x > -PW);
+      for(const p of pipes){
+        if(!p.passed && p.x+PW < BX){ p.passed = true; score++; document.getElementById('sc').textContent = score; }
+        if(BX+14 > p.x && BX-14 < p.x+PW && (y-14 < p.top || y+14 > p.top+GAP)) die();
+      }
+      if(y > H-40 || y < 0) die();
+    } else if(state==='ready'){ y = H/2 + Math.sin(t/300)*8; }
+    draw(); raf = requestAnimationFrame(loop);
+  }
+  function die(){ if(state!=='play') return; state = 'dead'; document.getElementById('bs').textContent = saveBest('flappy', score); }
+  function draw(){
+    const g = c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#5ec8ff'); g.addColorStop(1,'#c8f0ff'); c.fillStyle = g; c.fillRect(0,0,W,H);
+    c.fillStyle = 'rgba(255,255,255,.8)'; [[60,80],[230,130],[300,60]].forEach(([x,yy]) => { c.beginPath(); c.arc(x,yy,22,0,7); c.arc(x+24,yy+4,18,0,7); c.arc(x-22,yy+6,16,0,7); c.fill(); });
+    pipes.forEach(p => {
+      c.fillStyle = '#3cb043'; c.fillRect(p.x,0,PW,p.top); c.fillRect(p.x,p.top+GAP,PW,H);
+      c.fillStyle = '#2e8b36'; c.fillRect(p.x-4,p.top-20,PW+8,20); c.fillRect(p.x-4,p.top+GAP,PW+8,20);
+    });
+    c.fillStyle = '#d9b26b'; c.fillRect(0,H-40,W,40); c.fillStyle = '#7ac943'; c.fillRect(0,H-40,W,8);
+    c.save(); c.translate(BX,y); c.rotate(Math.max(-.5, Math.min(1.2, vy/10)));
+    c.font = '34px serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.scale(-1,1); c.fillText('🐤',0,2); c.restore();
+    c.fillStyle = '#fff'; c.strokeStyle = '#1b1b3a'; c.lineWidth = 5; c.textAlign = 'center'; c.font = '700 42px Fredoka, sans-serif';
+    c.strokeText(score, W/2, 70); c.fillText(score, W/2, 70);
+    if(state!=='play'){
+      c.font = '600 22px Fredoka, sans-serif';
+      const t = state==='ready' ? 'Tap to start' : 'Game over – tap to retry';
+      c.strokeText(t, W/2, H/2+70); c.fillText(t, W/2, H/2+70);
+    }
+  }
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); flap(); });
+  const key = e => { if(e.key===' ' || e.key==='ArrowUp'){ e.preventDefault(); flap(); } };
+  document.addEventListener('keydown', key);
+  reset(); raf = requestAnimationFrame(loop);
+  stopCurrent = () => { cancelAnimationFrame(raf); document.removeEventListener('keydown', key); };
+}
+
+/* ================= MEMORY ================= */
+function Memory(){
+  stage().innerHTML = `<div class="mem" id="mm"></div><div class="msg" id="msg">Find all 8 pairs in as few moves as you can.</div><div class="row"><button class="btn small" id="nw">New game</button></div>`;
+  setStats([['Moves',0,'mv'],['Best',store.get('best_memory','–'),'bs']]);
+  const EM = ['🐶','🐱','🦊','🐼','🐸','🦁','🐵','🐙'];
+  let open = [], moves, found, lock;
+  function nw(){
+    moves = 0; found = 0; open = []; lock = false;
+    document.getElementById('mv').textContent = 0;
+    document.getElementById('msg').textContent = 'Find all 8 pairs in as few moves as you can.';
+    const deck = [...EM, ...EM].sort(() => Math.random()-.5);
+    const mm = document.getElementById('mm'); mm.innerHTML = '';
+    deck.forEach(e => {
+      const b = document.createElement('button'); b.className = 'mcard'; b.innerHTML = `<span>${e}</span>`; b.dataset.e = e;
+      b.onclick = () => flip(b); mm.appendChild(b);
+    });
+  }
+  function flip(b){
+    if(lock || b.classList.contains('up') || b.classList.contains('done')) return;
+    b.classList.add('up'); open.push(b);
+    if(open.length === 2){
+      moves++; document.getElementById('mv').textContent = moves;
+      const [a, c] = open;
+      if(a.dataset.e === c.dataset.e){
+        a.classList.add('done'); c.classList.add('done'); open = []; found++;
+        if(found === 8){ document.getElementById('bs').textContent = saveBest('memory', moves, false); document.getElementById('msg').textContent = `🎉 Done in ${moves} moves!`; }
+      } else { lock = true; setTimeout(() => { a.classList.remove('up'); c.classList.remove('up'); open = []; lock = false; }, 750); }
+    }
+  }
+  document.getElementById('nw').onclick = nw; nw();
+  stopCurrent = null;
+}
+
+/* ================= TIC-TAC-TOE ================= */
+function TTT(){
+  stage().innerHTML = `<div class="ttt" id="tt"></div><div class="msg" id="msg">You are ❌. Beat the computer!</div>
+    <div class="row"><button class="btn small" id="nw">New game</button><button class="btn ghost small" id="lvl">Level: Normal</button></div>`;
+  const wins = store.get('ttt_score', {w:0,l:0,d:0});
+  setStats([['Won',wins.w,'w'],['Lost',wins.l,'l'],['Draw',wins.d,'d']]);
+  const L = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let b, done, hard = false;
+  const winner = s => { for(const l of L) if(s[l[0]] && s[l[0]]===s[l[1]] && s[l[1]]===s[l[2]]) return l; return null; };
+  function minimax(s, me){
+    const w = winner(s); if(w) return s[w[0]]==='O' ? 1 : -1; if(!s.includes('')) return 0;
+    let best = me ? -2 : 2;
+    s.forEach((v,i) => { if(!v){ s[i] = me?'O':'X'; const r = minimax(s,!me); s[i] = ''; best = me ? Math.max(best,r) : Math.min(best,r); } });
+    return best;
+  }
+  function ai(){
+    const empty = b.map((v,i) => v?null:i).filter(v => v!==null);
+    if(!hard && Math.random() < .35) return empty[Math.random()*empty.length|0];
+    let best = -2, mv = empty[0];
+    empty.forEach(i => { b[i] = 'O'; const r = minimax(b,false); b[i] = ''; if(r > best){ best = r; mv = i; } });
+    return mv;
+  }
+  function draw(line){
+    const tt = document.getElementById('tt'); tt.innerHTML = '';
+    b.forEach((v,i) => {
+      const x = document.createElement('button');
+      x.textContent = v==='X' ? '✕' : v==='O' ? '◯' : '';
+      x.className = (v==='X'?'x1':v==='O'?'o1':'') + (line && line.includes(i) ? ' win' : '');
+      x.onclick = () => play(i); tt.appendChild(x);
+    });
+  }
+  function end(msg, k){ done = true; document.getElementById('msg').textContent = msg; wins[k]++; store.set('ttt_score', wins); document.getElementById(k).textContent = wins[k]; }
+  function check(){
+    const w = winner(b);
+    if(w){ draw(w); end(b[w[0]]==='X' ? '🎉 You win!' : '🤖 Computer wins.', b[w[0]]==='X' ? 'w' : 'l'); return true; }
+    if(!b.includes('')){ draw(); end('🤝 Draw.', 'd'); return true; }
+    return false;
+  }
+  function play(i){
+    if(done || b[i]) return;
+    b[i] = 'X'; draw(); if(check()) return;
+    done = true;
+    setTimeout(() => { done = false; b[ai()] = 'O'; draw(); check(); }, 300);
+  }
+  function nw(){ b = Array(9).fill(''); done = false; draw(); document.getElementById('msg').textContent = 'You are ❌. Beat the computer!'; }
+  document.getElementById('nw').onclick = nw;
+  document.getElementById('lvl').onclick = e => { hard = !hard; e.target.textContent = 'Level: ' + (hard ? 'Hard' : 'Normal'); nw(); };
+  nw(); stopCurrent = null;
+}
+
+renderOwn();
+loadFeed();
+</script>
+</body>
+</html>
