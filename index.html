@@ -83,6 +83,28 @@ canvas{background:#0b0c1d;border-radius:14px;max-width:100%;touch-action:none;di
 .ttt button{aspect-ratio:1;border-radius:14px;border:0;background:var(--card);color:var(--text);font:700 48px Fredoka;cursor:pointer}
 .ttt button.x1{color:var(--accent)} .ttt button.o1{color:var(--accent2)}
 .ttt button.win{background:#2f6a59}
+.mgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;width:min(380px,88vw);touch-action:manipulation}
+.mgrid button{aspect-ratio:1;border:0;border-radius:6px;background:#3a3d86;color:#fff;font:700 clamp(13px,3.6vw,18px) Fredoka,sans-serif;cursor:pointer;padding:0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.mgrid button.o{background:#15173a;cursor:default}
+.mgrid button.boom{background:#c2364f}
+.holes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(360px,84vw)}
+.hole{aspect-ratio:1;border-radius:50%;border:0;background:radial-gradient(circle at 50% 70%,#2a1a0a 0 45%,#5a3a1a 46%);font-size:clamp(34px,10vw,54px);cursor:pointer;display:grid;place-items:center;overflow:hidden}
+.hole span{transition:transform .12s;transform:translateY(60%) scale(0)}
+.hole.up span{transform:none}
+.c4{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:#2440b8;padding:8px;border-radius:14px;width:min(420px,90vw)}
+.c4 button{aspect-ratio:1;border-radius:50%;border:0;background:#0f1024;cursor:pointer;padding:0}
+.c4 button.r{background:#ff4d5e}.c4 button.y{background:#ffcc33}
+.c4 button.win{box-shadow:0 0 0 4px #fff inset}
+.slide{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:min(340px,84vw);background:#26285c;padding:6px;border-radius:14px}
+.slide button{aspect-ratio:1;border:0;border-radius:10px;background:linear-gradient(135deg,#2f8a8a,#3ee0a1);color:#08261f;font:700 clamp(20px,6vw,30px) Fredoka,sans-serif;cursor:pointer}
+.slide button.e{background:transparent;cursor:default}
+.simon{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(320px,80vw)}
+.simon button{aspect-ratio:1;border:0;cursor:pointer;opacity:.4;transition:opacity .1s,transform .1s}
+.simon button:nth-child(1){background:#3ee06a;border-radius:100% 12px 12px 12px}
+.simon button:nth-child(2){background:#ff4d5e;border-radius:12px 100% 12px 12px}
+.simon button:nth-child(3){background:#ffcc33;border-radius:12px 12px 12px 100%}
+.simon button:nth-child(4){background:#3a8aff;border-radius:12px 12px 100% 12px}
+.simon button.lit{opacity:1;transform:scale(1.03)}
 iframe.feed{width:100%;aspect-ratio:16/9;max-height:72vh;border:0;border-radius:14px;background:#000}
 iframe.feed.tall{aspect-ratio:9/16;width:auto;height:72vh;max-width:100%}
 .gzcover{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:16/9;max-height:60vh;border-radius:14px;overflow:hidden;text-decoration:none}
@@ -105,13 +127,13 @@ iframe.feed.tall{aspect-ratio:9/16;width:auto;height:72vh;max-width:100%}
   <div class="hero">
     <div>
       <h1>Free games.<br>No downloads.</h1>
-      <p>Play instantly in your browser – on phone or computer. Our own originals plus nearly 3,000 more free games.</p>
+      <p>Play instantly in your browser – on phone or computer. 12 PlayBox originals plus nearly 3,000 more free games.</p>
       <div class="row" style="justify-content:flex-start">
         <button class="btn" onclick="openGame('snake')">▶ Play Snake</button>
         <button class="btn ghost" onclick="document.getElementById('more').scrollIntoView({behavior:'smooth'})">Browse all</button>
       </div>
     </div>
-    <div class="hero-art"><div>🐍</div><div>🧩</div><div>🐤</div><div>❌</div><div>🃏</div><div>⭕</div></div>
+    <div class="hero-art"><div>🐍</div><div>🧱</div><div>🐤</div><div>🦖</div><div>💣</div><div>🔴</div></div>
   </div>
 
   <section>
@@ -174,6 +196,13 @@ const OWN = [
   {id:'flappy', title:'Flappy Chick', icon:'🐤', cat:'Arcade', bg:'linear-gradient(135deg,#2a8fd6,#7fd3ff)'},
   {id:'memory', title:'Memory Match', icon:'🃏', cat:'Puzzle', bg:'linear-gradient(135deg,#7a3fd1,#ff5c8a)'},
   {id:'ttt', title:'Tic-Tac-Toe', icon:'❌', cat:'Board', bg:'linear-gradient(135deg,#c2364f,#ff8a5c)'},
+  {id:'breaker', title:'Brick Breaker', icon:'🧱', cat:'Arcade', bg:'linear-gradient(135deg,#b8442f,#ff9a5c)'},
+  {id:'mines', title:'Minesweeper', icon:'💣', cat:'Puzzle', bg:'linear-gradient(135deg,#4a5a7a,#9fb3d9)'},
+  {id:'mole', title:'Whack-a-Mole', icon:'🐹', cat:'Arcade', bg:'linear-gradient(135deg,#6b8a2f,#c8e06b)'},
+  {id:'c4', title:'Connect Four', icon:'🔴', cat:'Board', bg:'linear-gradient(135deg,#2f4ab8,#5c9aff)'},
+  {id:'slide', title:'Sliding Puzzle', icon:'🔢', cat:'Puzzle', bg:'linear-gradient(135deg,#2f8a8a,#7fe0d0)'},
+  {id:'simon', title:'Simon Says', icon:'🎵', cat:'Memory', bg:'linear-gradient(135deg,#8a2fb8,#e07fff)'},
+  {id:'dino', title:'Dino Run', icon:'🦖', cat:'Arcade', bg:'linear-gradient(135deg,#8a6a2f,#ffd27f)'},
 ];
 
 let feedItems = [], feedShown = PAGE_SIZE, feedCat = 'All', query = '';
@@ -309,7 +338,7 @@ function saveBest(id, score, higherIsBetter = true){
 function openGame(id){
   const g = OWN.find(x => x.id===id);
   showPlayer(g.icon + ' ' + g.title);
-  ({snake:Snake, g2048:G2048, flappy:Flappy, memory:Memory, ttt:TTT})[id]();
+  ({snake:Snake, g2048:G2048, flappy:Flappy, memory:Memory, ttt:TTT, breaker:Breaker, mines:Mines, mole:Mole, c4:C4, slide:Slide, simon:Simon, dino:Dino})[id]();
 }
 
 /* ---------- swipe helper ---------- */
@@ -541,6 +570,367 @@ function TTT(){
   document.getElementById('nw').onclick = nw;
   document.getElementById('lvl').onclick = e => { hard = !hard; e.target.textContent = 'Level: ' + (hard ? 'Hard' : 'Normal'); nw(); };
   nw(); stopCurrent = null;
+}
+
+/* ================= BRICK BREAKER ================= */
+function Breaker(){
+  const W = 360, H = 480;
+  stage().innerHTML = `<canvas id="cv" width="${W}" height="${H}"></canvas><div class="msg" id="msg">Move with your finger, mouse or arrow keys. Tap to launch.</div>`;
+  setStats([['Score',0,'sc'],['Lives',3,'lv'],['Best',store.get('best_breaker',0),'bs']]);
+  const cv = document.getElementById('cv'), c = cv.getContext('2d');
+  const COLS = 8, BW = 40, BH = 16, GAPX = 4, OX = (W - (COLS*BW + (COLS-1)*GAPX))/2;
+  const RC = ['#ff4d5e','#ff8a5c','#ffcc33','#3ee0a1','#3a8aff','#a06bff'];
+  let px, ball, bricks, score, lives, level, held, raf, last, keys = {}, over;
+  function build(){
+    bricks = [];
+    const rows = Math.min(6, 3 + level);
+    for(let r=0;r<rows;r++) for(let k=0;k<COLS;k++) bricks.push({x:OX+k*(BW+GAPX), y:60+r*(BH+6), c:RC[r%RC.length], hp: level>2 && r<2 ? 2 : 1});
+  }
+  function resetBall(){ held = true; ball = {x:px, y:H-52, r:7, vx:0, vy:0}; }
+  function launch(){
+    if(over){ start(); return; }
+    if(!held) return; held = false;
+    const sp = 4.2 + level*.4, a = (Math.random()*.6 - .3);
+    ball.vx = sp*Math.sin(a); ball.vy = -sp*Math.cos(a);
+  }
+  function start(){ score = 0; lives = 3; level = 1; over = false; px = W/2; build(); resetBall(); upd(); document.getElementById('msg').textContent = 'Tap to launch the ball.'; }
+  function upd(){ document.getElementById('sc').textContent = score; document.getElementById('lv').textContent = lives; }
+  function setPx(clientX){ const r = cv.getBoundingClientRect(); px = Math.max(36, Math.min(W-36, (clientX - r.left) * W / r.width)); }
+  cv.addEventListener('pointermove', e => setPx(e.clientX));
+  cv.addEventListener('pointerdown', e => { setPx(e.clientX); launch(); });
+  const kd = e => { if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ keys[e.key] = true; e.preventDefault(); } if(e.key===' '){ e.preventDefault(); launch(); } };
+  const ku = e => { keys[e.key] = false; };
+  document.addEventListener('keydown', kd); document.addEventListener('keyup', ku);
+  function loop(t){
+    const dt = Math.min(2, last ? (t-last)/16.67 : 1); last = t;
+    if(keys.ArrowLeft) px = Math.max(36, px - 7*dt);
+    if(keys.ArrowRight) px = Math.min(W-36, px + 7*dt);
+    if(!over){
+      if(held){ ball.x = px; ball.y = H-52; }
+      else {
+        const steps = 3;
+        for(let i=0;i<steps;i++){
+          ball.x += ball.vx*dt/steps; ball.y += ball.vy*dt/steps;
+          if(ball.x < ball.r){ ball.x = ball.r; ball.vx = Math.abs(ball.vx); }
+          if(ball.x > W-ball.r){ ball.x = W-ball.r; ball.vx = -Math.abs(ball.vx); }
+          if(ball.y < ball.r){ ball.y = ball.r; ball.vy = Math.abs(ball.vy); }
+          // paddle
+          if(ball.vy > 0 && ball.y+ball.r >= H-40 && ball.y+ball.r <= H-28 && Math.abs(ball.x-px) < 40){
+            const sp = Math.hypot(ball.vx, ball.vy), a = (ball.x-px)/40 * 1.05;
+            ball.vx = sp*Math.sin(a); ball.vy = -sp*Math.cos(a);
+          }
+          for(const b of bricks){
+            if(b.hp<=0) continue;
+            if(ball.x+ball.r > b.x && ball.x-ball.r < b.x+BW && ball.y+ball.r > b.y && ball.y-ball.r < b.y+BH){
+              const ox = Math.min(ball.x+ball.r-b.x, b.x+BW-(ball.x-ball.r)), oy = Math.min(ball.y+ball.r-b.y, b.y+BH-(ball.y-ball.r));
+              if(ox < oy) ball.vx = -ball.vx; else ball.vy = -ball.vy;
+              b.hp--; if(b.hp<=0){ score += 10*level; upd(); }
+              break;
+            }
+          }
+        }
+        if(ball.y > H+20){
+          lives--; upd();
+          if(lives<=0){ over = true; document.getElementById('bs').textContent = saveBest('breaker', score); document.getElementById('msg').textContent = `Game over! Score ${score}. Tap to play again.`; }
+          else resetBall();
+        }
+        if(bricks.every(b => b.hp<=0)){ level++; build(); resetBall(); document.getElementById('msg').textContent = `Level ${level}! Tap to launch.`; }
+      }
+    }
+    draw(); raf = requestAnimationFrame(loop);
+  }
+  function draw(){
+    c.fillStyle = '#0b0c1d'; c.fillRect(0,0,W,H);
+    bricks.forEach(b => { if(b.hp<=0) return; c.fillStyle = b.c; c.globalAlpha = b.hp>1 ? 1 : .85; c.beginPath(); c.roundRect(b.x,b.y,BW,BH,4); c.fill(); if(b.hp>1){ c.strokeStyle='#fff'; c.lineWidth=2; c.stroke(); } });
+    c.globalAlpha = 1;
+    c.fillStyle = '#ffcc33'; c.beginPath(); c.roundRect(px-40,H-40,80,12,6); c.fill();
+    c.fillStyle = '#fff'; c.beginPath(); c.arc(ball.x,ball.y,ball.r,0,7); c.fill();
+    c.fillStyle = '#a3a6d6'; c.font = '600 14px Inter, sans-serif'; c.textAlign = 'left'; c.fillText('Level ' + level, 10, 24);
+    if(over){ c.fillStyle='#fff'; c.textAlign='center'; c.font='700 30px Fredoka, sans-serif'; c.fillText('Game over', W/2, H/2); }
+  }
+  start(); raf = requestAnimationFrame(loop);
+  stopCurrent = () => { cancelAnimationFrame(raf); document.removeEventListener('keydown', kd); document.removeEventListener('keyup', ku); };
+}
+
+/* ================= MINESWEEPER ================= */
+function Mines(){
+  const N = 9, M = 10;
+  stage().innerHTML = `<div class="mgrid" id="mg"></div><div class="msg" id="msg">Tap to open. Long-press or use Flag mode to mark mines.</div>
+    <div class="row"><button class="btn small" id="nw">New game</button><button class="btn ghost small" id="fm">🚩 Flag mode: Off</button></div>`;
+  setStats([['Mines',M,'mn'],['Time',0,'tm'],['Best',store.get('best_mines','–'),'bs']]);
+  let grid, opened, flags, started, done, timer, secs, flagMode = false;
+  const nb = i => { const r = i/N|0, c = i%N, o = []; for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){ if(!dr&&!dc) continue; const rr=r+dr, cc=c+dc; if(rr>=0&&cc>=0&&rr<N&&cc<N) o.push(rr*N+cc); } return o; };
+  const COLORS = ['','#7fb2ff','#3ee0a1','#ff8a5c','#c99cff','#ff4d5e','#7fe0e0','#fff','#aaa'];
+  function nw(){
+    grid = Array(N*N).fill(0); opened = Array(N*N).fill(false); flags = Array(N*N).fill(false);
+    started = false; done = false; secs = 0; clearInterval(timer);
+    document.getElementById('tm').textContent = 0; document.getElementById('mn').textContent = M;
+    document.getElementById('msg').textContent = 'Tap to open. Long-press or use Flag mode to mark mines.';
+    const mg = document.getElementById('mg'); mg.innerHTML = '';
+    for(let i=0;i<N*N;i++){
+      const b = document.createElement('button'); b.dataset.i = i;
+      let pressT, longDone = false;
+      b.addEventListener('pointerdown', () => { longDone = false; pressT = setTimeout(() => { longDone = true; flag(i); }, 420); });
+      ['pointerup','pointerleave','pointercancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(pressT)));
+      b.addEventListener('click', () => { if(longDone) return; flagMode ? flag(i) : open(i); });
+      b.addEventListener('contextmenu', e => { e.preventDefault(); if(!longDone) flag(i); longDone = true; });
+      mg.appendChild(b);
+    }
+    draw();
+  }
+  function plant(safe){
+    const ban = new Set([safe, ...nb(safe)]); let k = 0;
+    while(k < M){ const i = Math.random()*N*N|0; if(grid[i]!==-1 && !ban.has(i)){ grid[i] = -1; k++; } }
+    for(let i=0;i<N*N;i++) if(grid[i]!==-1) grid[i] = nb(i).filter(j => grid[j]===-1).length;
+  }
+  function flag(i){ if(done || opened[i]) return; flags[i] = !flags[i]; document.getElementById('mn').textContent = M - flags.filter(Boolean).length; draw(); }
+  function open(i){
+    if(done || flags[i] || opened[i]) return;
+    if(!started){ started = true; plant(i); timer = setInterval(() => { secs++; document.getElementById('tm').textContent = secs; }, 1000); }
+    if(grid[i]===-1){
+      done = true; clearInterval(timer); opened = opened.map((o,j) => o || grid[j]===-1);
+      draw(i); document.getElementById('msg').textContent = '💥 Boom! Tap New game to try again.'; return;
+    }
+    const st = [i];
+    while(st.length){ const j = st.pop(); if(opened[j] || flags[j]) continue; opened[j] = true; if(grid[j]===0) nb(j).forEach(k => !opened[k] && st.push(k)); }
+    draw();
+    if(opened.filter(Boolean).length === N*N - M){
+      done = true; clearInterval(timer);
+      document.getElementById('bs').textContent = saveBest('mines', secs, false);
+      document.getElementById('msg').textContent = `🎉 You cleared the field in ${secs} seconds!`;
+    }
+  }
+  function draw(boom){
+    document.querySelectorAll('#mg button').forEach((b,i) => {
+      b.className = opened[i] ? 'o' : ''; if(i===boom) b.className += ' boom';
+      if(opened[i]){ b.textContent = grid[i]===-1 ? '💣' : (grid[i] || ''); b.style.color = COLORS[grid[i]] || ''; }
+      else { b.textContent = flags[i] ? '🚩' : ''; b.style.color = ''; }
+    });
+  }
+  document.getElementById('nw').onclick = nw;
+  document.getElementById('fm').onclick = e => { flagMode = !flagMode; e.target.textContent = '🚩 Flag mode: ' + (flagMode ? 'On' : 'Off'); };
+  nw();
+  stopCurrent = () => clearInterval(timer);
+}
+
+/* ================= WHACK-A-MOLE ================= */
+function Mole(){
+  stage().innerHTML = `<div class="holes" id="hl"></div><div class="msg" id="msg">Hit the hamsters 🐹, not the bombs 💣! 30 seconds.</div><div class="row"><button class="btn small" id="go">Start</button></div>`;
+  setStats([['Score',0,'sc'],['Time',30,'tm'],['Best',store.get('best_mole',0),'bs']]);
+  let score = 0, left = 30, playing = false, timers = [], tick;
+  const hl = document.getElementById('hl');
+  for(let i=0;i<9;i++){ const h = document.createElement('button'); h.className = 'hole'; h.innerHTML = '<span></span>'; h.onclick = () => hit(h); hl.appendChild(h); }
+  const holes = [...hl.children];
+  function hit(h){
+    if(!playing || !h.classList.contains('up') || h.dataset.hit) return;
+    h.dataset.hit = 1;
+    if(h.dataset.kind==='bomb'){ score = Math.max(0, score-3); h.firstChild.textContent = '💥'; }
+    else { score++; h.firstChild.textContent = '😵'; }
+    document.getElementById('sc').textContent = score;
+    setTimeout(() => h.classList.remove('up'), 180);
+  }
+  function pop(){
+    if(!playing) return;
+    const free = holes.filter(h => !h.classList.contains('up'));
+    if(free.length){
+      const h = free[Math.random()*free.length|0], bomb = Math.random() < .18;
+      h.dataset.kind = bomb ? 'bomb' : 'mole'; delete h.dataset.hit;
+      h.firstChild.textContent = bomb ? '💣' : '🐹'; h.classList.add('up');
+      const stay = Math.max(450, 1000 - (30-left)*18);
+      timers.push(setTimeout(() => h.classList.remove('up'), stay));
+    }
+    timers.push(setTimeout(pop, Math.max(330, 750 - (30-left)*14)));
+  }
+  function stop(){ playing = false; clearInterval(tick); timers.forEach(clearTimeout); timers = []; holes.forEach(h => h.classList.remove('up')); }
+  function start(){
+    stop(); score = 0; left = 30; playing = true;
+    document.getElementById('sc').textContent = 0; document.getElementById('tm').textContent = 30;
+    document.getElementById('msg').textContent = 'Go go go!'; document.getElementById('go').textContent = 'Restart';
+    tick = setInterval(() => {
+      left--; document.getElementById('tm').textContent = left;
+      if(left<=0){ stop(); document.getElementById('bs').textContent = saveBest('mole', score); document.getElementById('msg').textContent = `⏰ Time's up! You scored ${score}.`; document.getElementById('go').textContent = 'Play again'; }
+    }, 1000);
+    pop();
+  }
+  document.getElementById('go').onclick = start;
+  stopCurrent = stop;
+}
+
+/* ================= CONNECT FOUR ================= */
+function C4(){
+  const R = 6, C = 7;
+  stage().innerHTML = `<div class="c4" id="bd"></div><div class="msg" id="msg">You are 🔴. Tap a column to drop. Get 4 in a row!</div>
+    <div class="row"><button class="btn small" id="nw">New game</button><button class="btn ghost small" id="lvl">Level: Normal</button></div>`;
+  const wins = store.get('c4_score', {w:0,l:0,d:0});
+  setStats([['Won',wins.w,'w'],['Lost',wins.l,'l'],['Draw',wins.d,'d']]);
+  let b, done, busy, hard = false;
+  const at = (r,c) => b[r*C+c];
+  function line(s){
+    const D = [[0,1],[1,0],[1,1],[1,-1]];
+    for(let r=0;r<R;r++) for(let c=0;c<C;c++){ const v = s[r*C+c]; if(!v) continue;
+      for(const [dr,dc] of D){ const cells = [0,1,2,3].map(k => [r+dr*k, c+dc*k]);
+        if(cells.every(([rr,cc]) => rr>=0&&rr<R&&cc>=0&&cc<C&&s[rr*C+cc]===v)) return cells.map(([rr,cc]) => rr*C+cc); } }
+    return null;
+  }
+  const drop = (s,c) => { for(let r=R-1;r>=0;r--) if(!s[r*C+c]) return r; return -1; };
+  function score(s){
+    let sc = 0; const D = [[0,1],[1,0],[1,1],[1,-1]];
+    for(let r=0;r<R;r++){ if(s[r*C+3]==='y') sc += 3; else if(s[r*C+3]==='r') sc -= 3; }
+    for(let r=0;r<R;r++) for(let c=0;c<C;c++) for(const [dr,dc] of D){
+      const cells = [0,1,2,3].map(k => [r+dr*k, c+dc*k]); if(!cells.every(([rr,cc]) => rr>=0&&rr<R&&cc>=0&&cc<C)) continue;
+      const vals = cells.map(([rr,cc]) => s[rr*C+cc]), y = vals.filter(v => v==='y').length, rd = vals.filter(v => v==='r').length;
+      if(y && !rd) sc += [0,1,5,50,1000][y]; if(rd && !y) sc -= [0,1,6,60,1000][rd];
+    }
+    return sc;
+  }
+  function mm(s, depth, a, bt, me){
+    const w = line(s); if(w) return s[w[0]]==='y' ? 100000+depth : -100000-depth;
+    if(depth===0 || !s.includes('')) return score(s);
+    const order = [3,2,4,1,5,0,6];
+    if(me){ let v = -Infinity; for(const c of order){ const r = drop(s,c); if(r<0) continue; s[r*C+c]='y'; v = Math.max(v, mm(s,depth-1,a,bt,false)); s[r*C+c]=''; a = Math.max(a,v); if(a>=bt) break; } return v; }
+    let v = Infinity; for(const c of order){ const r = drop(s,c); if(r<0) continue; s[r*C+c]='r'; v = Math.min(v, mm(s,depth-1,a,bt,true)); s[r*C+c]=''; bt = Math.min(bt,v); if(a>=bt) break; } return v;
+  }
+  function ai(){
+    let best = -Infinity, pick = 3; const depth = hard ? 6 : 3;
+    for(const c of [3,2,4,1,5,0,6]){ const r = drop(b,c); if(r<0) continue; b[r*C+c] = 'y'; let v = mm(b, depth-1, -Infinity, Infinity, false); b[r*C+c] = '';
+      if(!hard) v += Math.random()*30; if(v > best){ best = v; pick = c; } }
+    return pick;
+  }
+  function draw(win){
+    const bd = document.getElementById('bd'); bd.innerHTML = '';
+    for(let i=0;i<R*C;i++){ const x = document.createElement('button'); x.className = (b[i]||'') + (win && win.includes(i) ? ' win' : ''); x.setAttribute('aria-label','column '+(i%C+1)); x.onclick = () => play(i%C); bd.appendChild(x); }
+  }
+  function end(msg, k){ done = true; document.getElementById('msg').textContent = msg; wins[k]++; store.set('c4_score', wins); document.getElementById(k).textContent = wins[k]; }
+  function check(){
+    const w = line(b);
+    if(w){ draw(w); end(b[w[0]]==='r' ? '🎉 You win!' : '🤖 Computer wins.', b[w[0]]==='r' ? 'w' : 'l'); return true; }
+    if(!b.includes('')){ draw(); end('🤝 Draw.', 'd'); return true; }
+    return false;
+  }
+  function play(c){
+    if(done || busy) return; const r = drop(b,c); if(r<0) return;
+    b[r*C+c] = 'r'; draw(); if(check()) return;
+    busy = true; document.getElementById('msg').textContent = '🤖 Thinking…';
+    setTimeout(() => { const cc = ai(); b[drop(b,cc)*C+cc] = 'y'; busy = false; draw(); if(!check()) document.getElementById('msg').textContent = 'Your turn 🔴'; }, 250);
+  }
+  function nw(){ b = Array(R*C).fill(''); done = false; busy = false; draw(); document.getElementById('msg').textContent = 'You are 🔴. Tap a column to drop. Get 4 in a row!'; }
+  document.getElementById('nw').onclick = nw;
+  document.getElementById('lvl').onclick = e => { hard = !hard; e.target.textContent = 'Level: ' + (hard ? 'Hard' : 'Normal'); nw(); };
+  nw(); stopCurrent = null;
+}
+
+/* ================= SLIDING PUZZLE ================= */
+function Slide(){
+  stage().innerHTML = `<div class="slide" id="sl"></div><div class="msg" id="msg">Put the numbers in order 1–15. Tap a tile next to the gap.</div><div class="row"><button class="btn small" id="nw">Shuffle</button></div>`;
+  setStats([['Moves',0,'mv'],['Best',store.get('best_slide','–'),'bs']]);
+  let t, moves, done;
+  const adj = (a,b) => (Math.abs(a%4-b%4) + Math.abs((a/4|0)-(b/4|0))) === 1;
+  function nw(){
+    t = [...Array(15).keys()].map(x => x+1).concat(0);
+    let e = 15, prev = -1;
+    for(let k=0;k<300;k++){ const opts = [e-4,e+4,e-1,e+1].filter(j => j>=0 && j<16 && adj(e,j) && j!==prev); const j = opts[Math.random()*opts.length|0]; [t[e],t[j]] = [t[j],t[e]]; prev = e; e = j; }
+    moves = 0; done = false; document.getElementById('mv').textContent = 0;
+    document.getElementById('msg').textContent = 'Put the numbers in order 1–15. Tap a tile next to the gap.'; draw();
+  }
+  function tap(i){
+    if(done) return; const e = t.indexOf(0); if(!adj(i,e)) return;
+    [t[e],t[i]] = [t[i],t[e]]; moves++; document.getElementById('mv').textContent = moves; draw();
+    if(t.slice(0,15).every((v,k) => v===k+1)){ done = true; document.getElementById('bs').textContent = saveBest('slide', moves, false); document.getElementById('msg').textContent = `🎉 Solved in ${moves} moves!`; }
+  }
+  function draw(){
+    const sl = document.getElementById('sl'); sl.innerHTML = '';
+    t.forEach((v,i) => { const b = document.createElement('button'); b.textContent = v || ''; if(!v) b.className = 'e'; b.onclick = () => tap(i); sl.appendChild(b); });
+  }
+  const key = e => { const map = {ArrowUp:4, ArrowDown:-4, ArrowLeft:1, ArrowRight:-1}; if(map[e.key]===undefined) return; e.preventDefault(); const e0 = t.indexOf(0), i = e0 + map[e.key]; if(i>=0 && i<16 && adj(i,e0)) tap(i); };
+  document.addEventListener('keydown', key);
+  document.getElementById('nw').onclick = nw; nw();
+  stopCurrent = () => document.removeEventListener('keydown', key);
+}
+
+/* ================= SIMON SAYS ================= */
+function Simon(){
+  stage().innerHTML = `<div class="simon" id="sm"><button aria-label="green"></button><button aria-label="red"></button><button aria-label="yellow"></button><button aria-label="blue"></button></div>
+    <div class="msg" id="msg">Watch the colours, then repeat them in the same order.</div><div class="row"><button class="btn small" id="go">Start</button></div>`;
+  setStats([['Level',0,'lv'],['Best',store.get('best_simon',0),'bs']]);
+  const pads = [...document.querySelectorAll('#sm button')], FREQ = [392, 330, 262, 196];
+  let seq = [], pos = 0, accepting = false, timers = [], ac = null;
+  function beep(i, ms){
+    try{
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain(); o.type = 'triangle'; o.frequency.value = FREQ[i];
+      g.gain.setValueAtTime(.18, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + ms/1000);
+      o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + ms/1000);
+    }catch(e){}
+  }
+  function flash(i, ms){ pads[i].classList.add('lit'); beep(i, ms); timers.push(setTimeout(() => pads[i].classList.remove('lit'), ms)); }
+  function playSeq(){
+    accepting = false; document.getElementById('msg').textContent = '👀 Watch…';
+    const gap = Math.max(260, 600 - seq.length*20);
+    seq.forEach((p,k) => timers.push(setTimeout(() => flash(p, gap*.7), 500 + k*gap)));
+    timers.push(setTimeout(() => { accepting = true; pos = 0; document.getElementById('msg').textContent = '👉 Your turn'; }, 500 + seq.length*gap));
+  }
+  function next(){ seq.push(Math.random()*4|0); document.getElementById('lv').textContent = seq.length; playSeq(); }
+  pads.forEach((p,i) => p.onclick = () => {
+    if(!accepting) return; flash(i, 220);
+    if(i !== seq[pos]){
+      accepting = false; const lvl = seq.length - 1;
+      document.getElementById('bs').textContent = saveBest('simon', lvl);
+      document.getElementById('msg').textContent = `❌ Wrong colour! You reached level ${lvl}.`; document.getElementById('go').textContent = 'Play again'; return;
+    }
+    pos++;
+    if(pos === seq.length){ accepting = false; timers.push(setTimeout(next, 600)); }
+  });
+  document.getElementById('go').onclick = () => { timers.forEach(clearTimeout); timers = []; seq = []; document.getElementById('go').textContent = 'Restart'; next(); };
+  stopCurrent = () => { timers.forEach(clearTimeout); try{ ac && ac.close(); }catch(e){} };
+}
+
+/* ================= DINO RUN ================= */
+function Dino(){
+  const W = 480, H = 220, GY = 180;
+  stage().innerHTML = `<canvas id="cv" width="${W}" height="${H}" style="width:100%;max-width:${W}px"></canvas><div class="msg">Tap or press Space / ↑ to jump over the cactuses.</div>`;
+  setStats([['Score',0,'sc'],['Best',store.get('best_dino',0),'bs']]);
+  const cv = document.getElementById('cv'), c = cv.getContext('2d');
+  let y, vy, obs, speed, dist, state = 'ready', raf, last, nextGap, clouds;
+  function reset(){ y = GY; vy = 0; obs = []; speed = 5; dist = 0; nextGap = 60; clouds = [[80,40],[260,60],[420,30]]; document.getElementById('sc').textContent = 0; }
+  function jump(){
+    if(state==='ready'){ state = 'play'; }
+    if(state==='dead'){ reset(); state = 'play'; return; }
+    if(y >= GY) vy = -11.5;
+  }
+  function loop(t){
+    const dt = Math.min(2, last ? (t-last)/16.67 : 1); last = t;
+    if(state==='play'){
+      vy += .62*dt; y = Math.min(GY, y + vy*dt); if(y>=GY) vy = 0;
+      speed = 5 + dist/700; dist += speed*dt;
+      nextGap -= speed*dt;
+      if(nextGap <= 0){ const big = Math.random() < .35, bird = dist > 1500 && Math.random() < .2;
+        obs.push(bird ? {x:W, w:30, h:24, bird:true, alt: GY-46} : {x:W, w: big ? 34 : 22, h: big ? 44 : 32});
+        nextGap = 220 + Math.random()*260 + speed*10; }
+      obs.forEach(o => o.x -= speed*dt); obs = obs.filter(o => o.x > -50);
+      clouds.forEach(cl => { cl[0] -= speed*.2*dt; if(cl[0] < -40) cl[0] = W + 20; });
+      const sc = Math.floor(dist/10); document.getElementById('sc').textContent = sc;
+      for(const o of obs){
+        const top = o.bird ? o.alt - o.h : GY - o.h, bottom = o.bird ? o.alt : GY;
+        if(70 > o.x+4 && 40 < o.x+o.w-4 && y > top+6 && y-36 < bottom-4){ state = 'dead'; document.getElementById('bs').textContent = saveBest('dino', sc); }
+      }
+    }
+    draw(); raf = requestAnimationFrame(loop);
+  }
+  function draw(){
+    c.fillStyle = '#fff6e0'; c.fillRect(0,0,W,H);
+    c.fillStyle = '#e8dcc0'; clouds.forEach(([x,yy]) => { c.beginPath(); c.arc(x,yy,12,0,7); c.arc(x+14,yy-4,14,0,7); c.arc(x+28,yy,11,0,7); c.fill(); });
+    c.strokeStyle = '#8a6a2f'; c.lineWidth = 2; c.beginPath(); c.moveTo(0,GY+1); c.lineTo(W,GY+1); c.stroke();
+    c.textAlign = 'center'; c.textBaseline = 'bottom';
+    obs.forEach(o => { c.font = `${o.bird ? 28 : o.h+6}px serif`; c.fillText(o.bird ? '🦅' : '🌵', o.x+o.w/2, o.bird ? o.alt+2 : GY+4); });
+    c.save(); c.translate(55, y+3); c.scale(-1,1); c.font = '40px serif'; c.fillText('🦖', 0, 0); c.restore();
+    c.fillStyle = '#5a4a2a'; c.textAlign = 'right'; c.textBaseline = 'top'; c.font = '700 20px Fredoka, sans-serif'; c.fillText(String(Math.floor(dist/10)).padStart(5,'0'), W-12, 10);
+    if(state!=='play'){ c.textAlign = 'center'; c.font = '600 20px Fredoka, sans-serif'; c.fillText(state==='ready' ? 'Tap to start' : 'Game over – tap to retry', W/2, 70); }
+  }
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
+  const key = e => { if(e.key===' ' || e.key==='ArrowUp'){ e.preventDefault(); jump(); } };
+  document.addEventListener('keydown', key);
+  reset(); raf = requestAnimationFrame(loop);
+  stopCurrent = () => { cancelAnimationFrame(raf); document.removeEventListener('keydown', key); };
 }
 
 renderOwn();
