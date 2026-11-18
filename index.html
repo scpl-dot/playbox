@@ -85,6 +85,9 @@ canvas{background:#0b0c1d;border-radius:14px;max-width:100%;touch-action:none;di
 .ttt button.win{background:#2f6a59}
 iframe.feed{width:100%;aspect-ratio:16/9;max-height:72vh;border:0;border-radius:14px;background:#000}
 iframe.feed.tall{aspect-ratio:9/16;width:auto;height:72vh;max-width:100%}
+.gzcover{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:16/9;max-height:60vh;border-radius:14px;overflow:hidden;text-decoration:none}
+.gzcover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gzcover .btn{position:relative;font-size:18px;padding:14px 28px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
 .ginfo{width:100%;color:var(--muted);font-size:14px;line-height:1.5}
 .ginfo p{margin-bottom:8px}.ginfo b{color:var(--text)}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
@@ -142,6 +145,19 @@ iframe.feed.tall{aspect-ratio:9/16;width:auto;height:72vh;max-width:100%}
    Partner games come from games.json (your Playgama Partners export).
    Each game link already carries your Playgama partner ID (clid).     */
 const GAMES_FILE = 'games.json';
+/* Gamezop: save the response of Gamezop's "All Games API" as gamezop.json
+   next to this page. If the file is missing, the site works without it.
+   GAMEZOP_IFRAME: set to true only after Gamezop has approved your
+   Property ID for iframe play; until then games open in a new tab.   */
+const GAMEZOP_FILE = 'gamezop.json';
+const GAMEZOP_IFRAME = false;
+const GZ_CATS = {'arcade':['arcade'],'action':['action'],'sports & racing':['sports','racing'],'strategy':['strategy'],'puzzle & logic':['puzzle'],'adventure':['adventure']};
+function fromGamezop(x){
+  const cat = (x.category && x.category.name || '').toLowerCase();
+  return { s:'gz-'+x.code, t:x.name, d:x.description||'', h:'', u:x.url, p:x.url,
+    i:(x.images && (x.images.cover || x.images.square || x.images.thumb)) || '',
+    g:(GZ_CATS[cat] || (cat ? [cat] : [])), m:1, v: x.screen_orientation==='portrait' ? 1 : 0, src:'gz' };
+}
 const PAGE_SIZE = 48;
 const CATS = ['All','puzzle','arcade','action','racing','shooting','strategy','simulation','adventure','merge','idle','obby','multiplayer','girls','sports'];
 
@@ -208,7 +224,7 @@ function renderFeed(){
   const frag = document.createDocumentFragment();
   list.slice(0, feedShown).forEach(g => frag.appendChild(card(
     {title:g.t, image:g.i, category: g.g.slice(0,2).map(cap).join(' · ') + (g.m ? ' · 📱' : '')},
-    () => openFeedGame(g), 'Free')));
+    () => openFeedGame(g), g.src==='gz' ? 'Gamezop' : 'Free')));
   el.appendChild(frag);
   if(!list.length) el.innerHTML = '<div class="empty">No games match.</div>';
   document.getElementById('feedSrc').textContent = `${list.length.toLocaleString()} games`;
@@ -217,12 +233,23 @@ function renderFeed(){
   more.textContent = `Load more (${(list.length - feedShown).toLocaleString()} left)`;
 }
 
+async function getJSON(f){ const r = await fetch(f); if(!r.ok) throw new Error(r.status); return r.json(); }
 async function loadFeed(){
-  try{
-    const r = await fetch(GAMES_FILE);
-    if(!r.ok) throw new Error(r.status);
-    feedItems = await r.json();
-  }catch(e){
+  const [pg, gz] = await Promise.allSettled([getJSON(GAMES_FILE), getJSON(GAMEZOP_FILE)]);
+  const pgList = pg.status==='fulfilled' ? pg.value : [];
+  let gzList = [];
+  if(gz.status==='fulfilled'){
+    const raw = Array.isArray(gz.value) ? gz.value : (gz.value.data || gz.value.games || []);
+    gzList = raw.filter(x => x && x.url && x.name).map(fromGamezop);
+  }
+  /* mix the two sources: one Gamezop game after every 3 Playgama games */
+  feedItems = [];
+  let a = 0, b = 0;
+  while(a < pgList.length || b < gzList.length){
+    for(let k=0; k<3 && a<pgList.length; k++) feedItems.push(pgList[a++]);
+    if(b < gzList.length) feedItems.push(gzList[b++]);
+  }
+  if(!feedItems.length){
     const n = document.getElementById('feedNote'); n.hidden = false;
     n.textContent = 'Could not load games.json. Put it in the same folder as this page.';
   }
@@ -259,15 +286,18 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeGame(); })
 
 function openFeedGame(g){
   showPlayer(g.t, true);
-  stage().innerHTML = `
-    <iframe class="feed${g.v ? ' tall' : ''}" src="${esc(g.u)}" allow="autoplay; fullscreen; gamepad; screen-wake-lock; clipboard-write" allowfullscreen></iframe>
+  const inFrame = g.src!=='gz' || GAMEZOP_IFRAME;
+  stage().innerHTML = (inFrame
+    ? `<iframe class="feed${g.v ? ' tall' : ''}" src="${esc(g.u)}" allow="autoplay; fullscreen; gamepad; screen-wake-lock; clipboard-write" allowfullscreen></iframe>
     <div class="row">
       <button class="btn small" id="fs">⛶ Full screen</button>
       <a class="btn ghost small" href="${esc(g.u)}" target="_blank" rel="noopener">Open in new tab ↗</a>
-    </div>
+    </div>`
+    : `<a class="gzcover" href="${esc(g.u)}" target="_blank" rel="noopener" style="background:${fallbackBg(g.t)}">
+        ${g.i ? `<img src="${esc(g.i)}" alt="" onerror="this.remove()">` : ''}<span class="btn">▶ Play now</span></a>`) + `
     <div class="ginfo"><p>${esc(g.d)}</p>${g.h ? `<p><b>How to play:</b> ${esc(g.h)}</p>` : ''}
     <div class="tags">${g.g.map(x => `<span>${esc(cap(x))}</span>`).join('')}${g.m ? '<span>📱 Works on mobile</span>' : ''}</div></div>`;
-  document.getElementById('fs').onclick = () => { const f = stage().querySelector('iframe'); try{ (f.requestFullscreen || f.webkitRequestFullscreen).call(f).catch(()=>{}); }catch(e){} };
+  if(inFrame) document.getElementById('fs').onclick = () => { const f = stage().querySelector('iframe'); try{ (f.requestFullscreen || f.webkitRequestFullscreen).call(f).catch(()=>{}); }catch(e){} };
 }
 
 function saveBest(id, score, higherIsBetter = true){
