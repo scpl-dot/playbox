@@ -34,6 +34,8 @@ section{margin-bottom:38px}
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
 .sec-head h2{font-family:Fredoka,sans-serif;font-size:24px}
 .sec-head small{color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);font:500 13px Inter,sans-serif;cursor:pointer;text-decoration:underline}
+.linkbtn:hover{color:var(--accent)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .chip{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--muted);font:500 13px Inter;cursor:pointer}
 .chip.on{background:var(--accent);color:#2a1d00;border-color:var(--accent)}
@@ -136,6 +138,11 @@ iframe.feed.tall{aspect-ratio:9/16;width:auto;height:72vh;max-width:100%}
     <div class="hero-art"><div>🐍</div><div>🧱</div><div>🐤</div><div>🦖</div><div>💣</div><div>🔴</div></div>
   </div>
 
+  <section id="recentSec" hidden>
+    <div class="sec-head"><h2>🕒 Recently Played</h2><button class="linkbtn" id="clearRecent">Clear</button></div>
+    <div class="grid" id="recent"></div>
+  </section>
+
   <section>
     <div class="sec-head"><h2>⭐ PlayBox Originals</h2><small>Made by us · no ads</small></div>
     <div class="grid" id="own"></div>
@@ -236,6 +243,32 @@ function renderOwn(){
   if(!list.length) el.innerHTML = '<div class="empty">No originals match your search.</div>';
 }
 
+/* ---------- recently played (last 12, kept in this browser) ---------- */
+const RECENT_MAX = 12;
+function addRecent(entry){
+  const list = store.get('recent', []).filter(x => x.k !== entry.k);
+  list.unshift(entry);
+  store.set('recent', list.slice(0, RECENT_MAX));
+}
+function renderRecent(){
+  const list = store.get('recent', []);
+  const sec = document.getElementById('recentSec'), el = document.getElementById('recent');
+  el.innerHTML = '';
+  list.forEach(r => {
+    if(r.own){
+      const g = OWN.find(x => x.id === r.own); if(!g) return;
+      const best = store.get('best_'+g.id, null);
+      el.appendChild(card({...g, cat: g.cat + (best!==null ? ` · Best ${best}` : '')}, () => openGame(g.id), 'Original'));
+    } else if(r.game){
+      const g = feedItems.find(x => x.s === r.game.s) || r.game;
+      el.appendChild(card({title:g.t, image:g.i, category: g.g.slice(0,2).map(cap).join(' · ') + (g.m ? ' · 📱' : '')},
+        () => openFeedGame(g), g.src==='gz' ? 'Gamezop' : 'Free'));
+    }
+  });
+  sec.hidden = !el.children.length;
+}
+document.getElementById('clearRecent').onclick = () => { store.set('recent', []); renderRecent(); };
+
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 function filtered(){
   return feedItems.filter(g => (feedCat==='All' || g.g.includes(feedCat)) && (!query || g.t.toLowerCase().includes(query) || g.g.some(x => x.includes(query))));
@@ -308,12 +341,13 @@ function closeGame(){
   document.getElementById('player').classList.remove('open');
   stage().innerHTML = ''; document.getElementById('pstats').innerHTML = '';
   document.body.style.overflow = '';
-  renderOwn();
+  renderOwn(); renderRecent();
 }
 document.getElementById('player').addEventListener('click', e => { if(e.target.id==='player') closeGame(); });
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeGame(); });
 
 function openFeedGame(g){
+  addRecent({k:'f:'+g.s, game:{s:g.s, t:g.t, d:g.d, h:g.h, u:g.u, i:g.i, g:g.g, m:g.m, v:g.v, src:g.src}});
   showPlayer(g.t, true);
   const inFrame = g.src!=='gz' || GAMEZOP_IFRAME;
   stage().innerHTML = (inFrame
@@ -337,6 +371,7 @@ function saveBest(id, score, higherIsBetter = true){
 
 function openGame(id){
   const g = OWN.find(x => x.id===id);
+  addRecent({k:'o:'+id, own:id});
   showPlayer(g.icon + ' ' + g.title);
   ({snake:Snake, g2048:G2048, flappy:Flappy, memory:Memory, ttt:TTT, breaker:Breaker, mines:Mines, mole:Mole, c4:C4, slide:Slide, simon:Simon, dino:Dino})[id]();
 }
@@ -934,7 +969,8 @@ function Dino(){
 }
 
 renderOwn();
-loadFeed();
+renderRecent();
+loadFeed().then(renderRecent);
 </script>
 </body>
 </html>
